@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta Interactiva</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('imgs/Screenshot_1.png'); /* Ruta de la imagen de fondo */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 10px solid #333;
+            position: relative;
+            overflow: hidden;
+            transition: transform 5s ease-out;
+        }
+
+        .slice {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            clip-path: polygon(100% 0, 50% 100%, 0 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .slice:nth-child(odd) {
+            background-color: #ff6f61;
+        }
+
+        .slice:nth-child(even) {
+            background-color: #6b5b95;
+        }
+
+        .spin-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .add-option {
+            margin-top: 20px;
+        }
+
+        .add-option input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .add-option button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wheel-container">
+        <div class="wheel" id="wheel">
+            <!-- Las opciones se añadirán aquí dinámicamente -->
+        </div>
+    </div>
+    <button class="spin-button" onclick="spinWheel()">Girar la ruleta</button>
+    <div class="add-option">
+        <input type="text" id="newOption" placeholder="Añadir opción">
+        <button onclick="addOption()">Añadir</button>
+    </div>
+
+    <script>
+        let options = [];
+        let wheel = document.getElementById('wheel');
+
+        function createWheel() {
+            wheel.innerHTML = '';
+            if (options.length === 0) return; // No crear la ruleta si no hay opciones
+            let angle = 360 / options.length;
+            options.forEach((option, index) => {
+                let slice = document.createElement('div');
+                slice.className = 'slice';
+                slice.style.transform = `rotate(${angle * index}deg)`;
+                slice.textContent = option;
+                wheel.appendChild(slice);
+            });
+        }
+
+        function spinWheel() {
+            if (options.length === 0) {
+                alert("Por favor, añade al menos una opción antes de girar la ruleta.");
+                return;
+            }
+
+            let randomAngle = Math.floor(Math.random() * 360) + 1440; // 1440 para varias vueltas
+            wheel.style.transform = `rotate(${randomAngle}deg)`;
+
+            setTimeout(() => {
+                let selectedIndex = Math.floor((randomAngle % 360) / (360 / options.length));
+                let selectedOption = options[selectedIndex];
+                if (selectedOption) {
+                    alert(`¡La ruleta seleccionó: ${selectedOption}!`);
+                } else {
+                    alert("Hubo un error al seleccionar la opción. Inténtalo de nuevo.");
+                }
+            }, 5000); // Espera a que termine la animación
+        }
+
+        function addOption() {
+            let newOption = document.getElementById('newOption').value;
+            if (newOption) {
+                options.push(newOption);
+                createWheel();
+                document.getElementById('newOption').value = '';
+            }
+        }
+
+        createWheel();
+    </script>
+</body>
+</html>
