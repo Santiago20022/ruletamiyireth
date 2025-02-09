@@ -13,11 +13,11 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-image: url('imgs/Screenshot_1.png'); /* Ruta de la imagen de fondo */
-            background-size: contain; /* Ajuste para que la imagen NO se corte */
-            background-position: center; /* Centra la imagen */
-            background-repeat: no-repeat; /* Evita que la imagen se repita */
-            background-color: black; /* Color de fondo en caso de que sobren espacios */
+            background-image: url('imgs/Screenshot_1.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: black;
         }
 
         .wheel-container {
@@ -70,6 +70,9 @@
 
         .add-option {
             margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .add-option input {
@@ -89,7 +92,33 @@
             border-radius: 5px;
         }
 
-        /* Estilos responsivos para móviles */
+        .options-list {
+            margin-top: 10px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .options-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #444;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-top: 5px;
+            width: 200px;
+        }
+
+        .delete-button {
+            background: red;
+            border: none;
+            color: white;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
         @media (max-width: 600px) {
             .wheel-container {
                 width: 250px;
@@ -109,23 +138,24 @@
 </head>
 <body>
     <div class="wheel-container">
-        <div class="wheel" id="wheel">
-            <!-- Las opciones se añadirán aquí dinámicamente -->
-        </div>
+        <div class="wheel" id="wheel"></div>
     </div>
     <button class="spin-button" onclick="spinWheel()">Girar la ruleta</button>
     <div class="add-option">
         <input type="text" id="newOption" placeholder="Añadir opción">
         <button onclick="addOption()">Añadir</button>
     </div>
+    <ul class="options-list" id="optionsList"></ul>
 
     <script>
         let options = [];
         let wheel = document.getElementById('wheel');
+        let optionsList = document.getElementById('optionsList');
 
         function createWheel() {
             wheel.innerHTML = '';
-            if (options.length === 0) return; // No crear la ruleta si no hay opciones
+            optionsList.innerHTML = '';
+            if (options.length === 0) return;
             let angle = 360 / options.length;
             options.forEach((option, index) => {
                 let slice = document.createElement('div');
@@ -133,6 +163,17 @@
                 slice.style.transform = `rotate(${angle * index}deg)`;
                 slice.textContent = option;
                 wheel.appendChild(slice);
+
+                let listItem = document.createElement('li');
+                listItem.textContent = option;
+
+                let deleteButton = document.createElement('button');
+                deleteButton.textContent = 'X';
+                deleteButton.className = 'delete-button';
+                deleteButton.onclick = () => removeOption(index);
+
+                listItem.appendChild(deleteButton);
+                optionsList.appendChild(listItem);
             });
         }
 
@@ -142,7 +183,7 @@
                 return;
             }
 
-            let randomAngle = Math.floor(Math.random() * 360) + 1440; // 1440 para varias vueltas
+            let randomAngle = Math.floor(Math.random() * 360) + 1440;
             wheel.style.transform = `rotate(${randomAngle}deg)`;
 
             setTimeout(() => {
@@ -153,7 +194,7 @@
                 } else {
                     alert("Hubo un error al seleccionar la opción. Inténtalo de nuevo.");
                 }
-            }, 5000); // Espera a que termine la animación
+            }, 5000);
         }
 
         function addOption() {
@@ -163,6 +204,11 @@
                 createWheel();
                 document.getElementById('newOption').value = '';
             }
+        }
+
+        function removeOption(index) {
+            options.splice(index, 1);
+            createWheel();
         }
 
         createWheel();
